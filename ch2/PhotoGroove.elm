@@ -65,12 +65,7 @@ view model =
   Html.div [ class "content" ]
     [ Html.h1 [] [ Html.text "Photo Groove" ]
     , Html.h3 [] [ Html.text "Thumbnail size"]
-    , Html.div [ id "choose-size" ]
-      [
-        viewSizeChooser Small
-      , viewSizeChooser Medium
-      , viewSizeChooser Large
-     ]
+    , Html.div [ id "choose-size" ] (List.map viewSizeChooser [Small, Medium, Large])
     , Html.button [ onClick { description = "ClickedSurprizeMe", data = ""} ] [ Html.text "Surprize Me!"]
     , Html.div [ id "thumbnails" ] (List.map (viewThumbnail model.selectedUrl) model.photos)
     , Html.img [ class "large", src (urlPrefix ++ "large/" ++ model.selectedUrl)][]
