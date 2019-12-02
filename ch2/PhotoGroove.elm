@@ -1,6 +1,6 @@
 module PhotoGroove exposing (main)
 import Html
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (id, class, src)
 
 initialModel = 
   [{ url = "1.jpeg" }
