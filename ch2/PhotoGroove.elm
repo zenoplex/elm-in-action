@@ -1,6 +1,8 @@
 module PhotoGroove exposing (main)
+import Browser
 import Html
 import Html.Attributes exposing (id, class, classList, src)
+import Html.Events exposing (onClick)
 
 initialModel = 
   { photos = 
@@ -26,7 +28,19 @@ viewThumbnail selectedUrl thumb =
     [ 
       src(urlPrefix ++ thumb.url)
     , classList [ ("selected", selectedUrl == thumb.url)]
+    , onClick { description = "ClickedPhoto", data = thumb.url}
     ][]
-              
+
+update msg model =
+  if msg.description == "ClickedPhoto" then
+    { model | selectedUrl = msg.data }
+  else
+    model
+
 main =
-  view initialModel
+  Browser.sandbox
+    { 
+      init = initialModel
+    , view = view
+    , update = update
+    }
