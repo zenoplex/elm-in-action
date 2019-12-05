@@ -4,6 +4,7 @@ import Array exposing (Array)
 import Html exposing (Html)
 import Html.Attributes exposing (id, class, classList, src, type_, name, checked)
 import Html.Events exposing (onClick)
+import Random
 
 type alias Photo =
     { url : String }
@@ -23,6 +24,7 @@ type Msg
   = ClickedPhoto String
   | ClickedSize ThumbnailSize
   | ClickedSurprizeMe
+  | GotSelectedIndex Int
 
 initialModel: Model
 initialModel = 
@@ -75,8 +77,9 @@ view model =
   Html.div [ class "content" ]
     [ Html.h1 [] [ Html.text "Photo Groove" ]
     , Html.h3 [] [ Html.text "Thumbnail size"]
-    , Html.button [ onClick ClickedSurprizeMe ] [ Html.text "Choose second image"]
-    , Html.div [ id "choose-size" ] (List.map (\size -> viewSizeChooser size (model.chosenSize == size)) [Small, Medium, Large])
+    , Html.button [ onClick ClickedSurprizeMe ] [ Html.text "Select random image"]
+    , Html.div [ id "choose-size" ] 
+        (List.map (\size -> viewSizeChooser size (model.chosenSize == size)) [Small, Medium, Large])
     , Html.div [ 
       id "thumbnails"
       , class (sizeToClass model.chosenSize) 
@@ -101,19 +104,25 @@ getPhotoUrl index =
     Nothing ->
       ""
 
-update: Msg -> Model -> Model
+getRandomInt: Random.Generator Int
+getRandomInt = Random.int 0 2
+
+update: Msg -> Model -> (Model, Cmd Msg)
 update msg model =
  case msg of
-    ClickedPhoto url ->
-      { model | selectedUrl = url }
+    GotSelectedIndex index ->
+      ({ model | selectedUrl = getPhotoUrl index}, Cmd.none)
+    ClickedPhoto url -> 
+      ({ model | selectedUrl = url }, Cmd.none)
     ClickedSurprizeMe ->
-      { model | selectedUrl = "2.jpeg" }
+      (model, Random.generate GotSelectedIndex getRandomInt)
     ClickedSize size ->
-      { model | chosenSize = size}
+      ({ model | chosenSize = size}, Cmd.none)
 main =
-  Browser.sandbox
+  Browser.element
     { 
-      init = initialModel
+      init = \flags -> (initialModel, Cmd.none)
     , view = view
     , update = update
+    , subscriptions = \model -> Sub.none
     }
