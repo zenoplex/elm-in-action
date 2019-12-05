@@ -61,11 +61,11 @@ sizeToClass size =
     Large ->
       "large"
 
-viewSizeChooser: ThumbnailSize -> ThumbnailSize -> Html Msg
-viewSizeChooser chosenSize size  =
+viewSizeChooser: ThumbnailSize -> Bool -> Html Msg
+viewSizeChooser size isChosen  =
   Html.label []
     [
-      Html.input [ type_ "radio", name "size", checked (chosenSize == size) ,onClick (ClickedSize size)] []
+      Html.input [ type_ "radio", name "size", checked isChosen ,onClick (ClickedSize size)] []
     , Html.text (sizeToString size)
     ]
 
@@ -75,7 +75,7 @@ view model =
     [ Html.h1 [] [ Html.text "Photo Groove" ]
     , Html.h3 [] [ Html.text "Thumbnail size"]
     , Html.button [ onClick ClickedSurprizeMe ] [ Html.text "Choose second image"]
-    , Html.div [ id "choose-size" ] (List.map (viewSizeChooser model.chosenSize) [Small, Medium, Large])
+    , Html.div [ id "choose-size" ] (List.map (\size -> viewSizeChooser size (model.chosenSize == size)) [Small, Medium, Large])
     , Html.div [ 
       id "thumbnails"
       , class (sizeToClass model.chosenSize) 
