@@ -52,6 +52,7 @@ sizeToString size =
     Large ->
       "large" 
 
+sizeToClass: ThumbnailSize -> String
 sizeToClass size =
   case size of
     Small ->
