@@ -1,6 +1,5 @@
 module PhotoGroove exposing (main)
 import Browser
-import Array exposing (Array)
 import Html exposing (Html)
 import Html.Attributes exposing (id, class, classList, src, type_, name, checked)
 import Html.Events exposing (onClick)
