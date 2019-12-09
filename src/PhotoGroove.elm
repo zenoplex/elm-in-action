@@ -107,19 +107,17 @@ viewThumbnail selectedUrl thumb =
 update: Msg -> Model -> (Model, Cmd Msg)
 update msg model =
  case msg of
-    GotPhotos result ->
-      case result of
-          Ok responseStr ->
-            case String.split "," responseStr of
-              (firstUrl :: _) as urls ->
-                let
-                  photos = List.map (\url -> { url = url}) urls
-                in
-                ({ model | status = Loaded photos firstUrl}, Cmd.none)      
-              [] ->
-                ({ model | status = Error "0 photos found"}, Cmd.none)     
-          Err httpError ->
-            ({ model | status = Error "Server error"}, Cmd.none)     
+    GotPhotos (Ok responseStr) ->     
+      case String.split "," responseStr of
+        (firstUrl :: _) as urls ->
+          let
+            photos = List.map Photo urls
+          in
+          ({ model | status = Loaded photos firstUrl}, Cmd.none)      
+        [] ->
+          ({ model | status = Error "0 photos found"}, Cmd.none)     
+    GotPhotos (Err _) ->
+      ({ model | status = Error "Server error"}, Cmd.none)     
       
     GotRandomPhoto photo ->
       ({ model | status = selectUrl photo.url model.status }, Cmd.none)
