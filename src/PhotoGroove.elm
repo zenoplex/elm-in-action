@@ -38,6 +38,12 @@ initialModel =
   , chosenSize = Medium
   }
 
+initialCmd: Cmd Msg
+initialCmd = Http.get 
+  { url = "http://elm-in-action.com/photos/list"
+  , expect = Http.expectString (\result -> GotPhotos result)
+  }
+
 urlPrefix: String
 urlPrefix = 
   "http://elm-in-action.com/"
