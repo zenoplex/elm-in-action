@@ -4,10 +4,15 @@ import Html exposing (Html)
 import Html.Attributes exposing (id, class, classList, src, type_, name, checked)
 import Html.Events exposing (onClick)
 import Http
+import Json.Decode exposing (Decoder, int, list, string, succeed)
+import Json.Decode.Pipeline exposing (optional, required)
 import Random
 
 type alias Photo =
-    { url : String }
+    { url : String
+    , size: Int
+    , title: String
+    }
 
 type ThumbnailSize
   = Small
@@ -30,6 +35,16 @@ type Status
   = Loading
   |  Loaded (List Photo) String
   |  Error String
+
+photoDecoder: Decoder Photo
+photoDecoder = succeed buildPhoto
+  |> required "url" string
+  |> required "size" int 
+  |> optional "title" string "(untitled)"
+
+buildPhoto: String -> Int -> String -> Photo
+buildPhoto url size title = 
+  { url = url, size = size, title = title }
 
 initialModel: Model
 initialModel = 
