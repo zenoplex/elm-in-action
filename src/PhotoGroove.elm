@@ -14,6 +14,12 @@ type alias Photo =
     , title: String
     }
 
+photoDecoder: Decoder Photo
+photoDecoder = succeed Photo
+  |> required "url" string
+  |> required "size" int 
+  |> optional "title" string "(untitled)"
+
 type ThumbnailSize
   = Small
   | Medium 
@@ -35,16 +41,6 @@ type Status
   = Loading
   |  Loaded (List Photo) String
   |  Error String
-
-photoDecoder: Decoder Photo
-photoDecoder = succeed buildPhoto
-  |> required "url" string
-  |> required "size" int 
-  |> optional "title" string "(untitled)"
-
-buildPhoto: String -> Int -> String -> Photo
-buildPhoto url size title = 
-  { url = url, size = size, title = title }
 
 initialModel: Model
 initialModel = 
