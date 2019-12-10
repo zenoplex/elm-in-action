@@ -1,12 +1,12 @@
 module PhotoGroove exposing (main)
 import Browser
 import Html exposing (Html)
-import Html.Attributes exposing (id, class, classList, src, title, type_, name, checked)
+import Html.Attributes as Attr
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode exposing (Decoder, int, list, string, succeed)
 import Json.Decode.Pipeline exposing (optional, required)
-import Json.Encode
+import Json.Encode as Encode
 import Random
 
 type alias Photo =
@@ -84,13 +84,19 @@ viewSizeChooser: ThumbnailSize -> Bool -> Html Msg
 viewSizeChooser size isChosen  =
   Html.label []
     [
-      Html.input [ type_ "radio", name "size", checked isChosen ,onClick (ClickedSize size)] []
+      Html.input 
+        [ 
+          Attr.type_ "radio"
+        , Attr.name "size"
+        , Attr.checked isChosen
+        , onClick (ClickedSize size)
+        ] []
     , Html.text (sizeToString size)
     ]
 
 view: Model -> Html Msg
 view model = 
-  Html.div [ class "content" ] <| 
+  Html.div [ Attr.class "content" ] <| 
     case model.status of
       Loaded photos selectedUrl ->
         viewLoaded photos selectedUrl model.chosenSize
@@ -101,11 +107,11 @@ view model =
 
 viewFilter: String -> Int -> Html Msg
 viewFilter name magnitude =
-  Html.div [ class "filter-slider" ]
+  Html.div [ Attr.class "filter-slider" ]
     [ Html.label [] [ Html.text name ]
     , rangeSlider 
-      [ Html.Attributes.max "11"
-      , Html.Attributes.property "val" (Json.Encode.int magnitude)
+      [ Attr.max "11"
+      , Attr.property "val" (Encode.int magnitude)
       ] []
     , Html.label [] [ Html.text (String.fromInt magnitude)]
     ]
@@ -115,22 +121,23 @@ viewLoaded photos selectedUrl chosenSize =
   [ Html.h1 [] [ Html.text "Photo Groove" ]
     , Html.h3 [] [ Html.text "Thumbnail size"]
     , Html.button [ onClick ClickedSurprizeMe ] [ Html.text "Select random image"]
-    , Html.div [ id "choose-size" ] 
+    , Html.div [ Attr.id "choose-size" ] 
         <| List.map (\size -> viewSizeChooser size (chosenSize == size)) [Small, Medium, Large]
-    , Html.div [ 
-      id "thumbnails"
-      , class (sizeToClass chosenSize) 
-      ] (List.map (viewThumbnail selectedUrl) photos)
-    , Html.img [ class "large", src (urlPrefix ++ "large/" ++ selectedUrl)][]
+    , Html.div 
+        [ 
+          Attr.id "thumbnails"
+        , Attr.class (sizeToClass chosenSize) 
+        ] (List.map (viewThumbnail selectedUrl) photos)
+    , Html.img [ Attr.class "large", Attr.src (urlPrefix ++ "large/" ++ selectedUrl)][]
   ]
 
 viewThumbnail: String -> Photo -> Html Msg
 viewThumbnail selectedUrl thumb =
   Html.img
     [ 
-      src(urlPrefix ++ thumb.url)
-    , title (thumb.title ++ "[" ++ String.fromInt thumb.size ++ "KB]")
-    , classList [ ("selected", selectedUrl == thumb.url)]
+      Attr.src(urlPrefix ++ thumb.url)
+    , Attr.title (thumb.title ++ "[" ++ String.fromInt thumb.size ++ "KB]")
+    , Attr.classList [ ("selected", selectedUrl == thumb.url)]
     , onClick (ClickedPhoto thumb.url)
     ][]
 
