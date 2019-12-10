@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import Http
 import Json.Decode exposing (Decoder, int, list, string, succeed)
 import Json.Decode.Pipeline exposing (optional, required)
+import Json.Encode
 import Random
 
 type alias Photo =
@@ -98,6 +99,17 @@ view model =
       Error errorMessage ->
         [ Html.text ("Error: " ++ errorMessage)]
 
+viewFilter: String -> Int -> Html Msg
+viewFilter name magnitude =
+  Html.div [ class "filter-slider" ]
+    [ Html.label [] [ Html.text name ]
+    , rangeSlider 
+      [ Html.Attributes.max "11"
+      , Html.Attributes.property "val" (Json.Encode.int magnitude)
+      ] []
+    , Html.label [] [ Html.text (String.fromInt magnitude)]
+    ]
+
 viewLoaded: List Photo -> String -> ThumbnailSize -> List (Html Msg)
 viewLoaded photos selectedUrl chosenSize = 
   [ Html.h1 [] [ Html.text "Photo Groove" ]
@@ -172,3 +184,6 @@ main =
     , update = update
     , subscriptions = \_ -> Sub.none
     }
+
+rangeSlider attributes children =
+  Html.node "range-slider" attributes children
