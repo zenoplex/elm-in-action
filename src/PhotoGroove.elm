@@ -105,13 +105,14 @@ view model =
       Error errorMessage ->
         [ Html.text ("Error: " ++ errorMessage)]
 
-viewFilter: String -> Int -> Html Msg
-viewFilter name magnitude =
+viewFilter: (Int -> Msg) -> String -> Int -> Html Msg
+viewFilter toMsg name magnitude =
   Html.div [ Attr.class "filter-slider" ]
     [ Html.label [] [ Html.text name ]
     , rangeSlider 
       [ Attr.max "11"
       , Attr.property "val" (Encode.int magnitude)
+      , onSlide toMsg
       ] []
     , Html.label [] [ Html.text (String.fromInt magnitude)]
     ]
