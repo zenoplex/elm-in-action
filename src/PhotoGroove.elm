@@ -204,12 +204,7 @@ rangeSlider attributes children =
 
 onSlide: (Int -> msg) -> Html.Attribute msg
 onSlide toMsg = 
-  let
-      detailSlideTo: Decoder Int
-      detailSlideTo = at ["detail", "slideTo"] int
-      msgDecoder: Decoder msg
-      msgDecoder =
-        Json.Decode.map toMsg detailSlideTo
-  in
-  on "slide" msgDecoder
+  at ["detail", "slideTo"] int
+    |> Json.Decode.map toMsg
+    |> on "slide"
   
