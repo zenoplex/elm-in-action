@@ -121,6 +121,12 @@ viewLoaded photos selectedUrl chosenSize =
   [ Html.h1 [] [ Html.text "Photo Groove" ]
     , Html.h3 [] [ Html.text "Thumbnail size"]
     , Html.button [ onClick ClickedSurprizeMe ] [ Html.text "Select random image"]
+    , Html.div [ Attr.class "filters" ]
+      [
+        viewFilter "Hue" 0
+      , viewFilter "Ripple" 0
+      , viewFilter "Noise" 0
+      ]
     , Html.div [ Attr.id "choose-size" ] 
         <| List.map (\size -> viewSizeChooser size (chosenSize == size)) [Small, Medium, Large]
     , Html.div 
