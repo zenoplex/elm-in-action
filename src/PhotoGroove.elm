@@ -29,6 +29,9 @@ type ThumbnailSize
 type alias Model =
     { status: Status
     , chosenSize: ThumbnailSize
+    , hue: Int
+    , ripple: Int
+    , noise: Int
     }
 
 type Msg
@@ -37,6 +40,9 @@ type Msg
   | ClickedSurprizeMe
   | GotRandomPhoto Photo
   | GotPhotos (Result Http.Error (List Photo))
+  | SlideHue Int
+  | SlideRipple Int
+  | SlideNoise Int
 
 type Status
   = Loading
@@ -48,6 +54,9 @@ initialModel =
   { 
     status = Loading
   , chosenSize = Medium
+  , hue = 5
+  , ripple = 5
+  , noise = 5
   }
 
 initialCmd: Cmd Msg
@@ -99,7 +108,7 @@ view model =
   Html.div [ Attr.class "content" ] <| 
     case model.status of
       Loaded photos selectedUrl ->
-        viewLoaded photos selectedUrl model.chosenSize
+        viewLoaded photos selectedUrl model
       Loading ->
         []
       Error errorMessage ->
@@ -117,23 +126,23 @@ viewFilter toMsg name magnitude =
     , Html.label [] [ Html.text (String.fromInt magnitude)]
     ]
 
-viewLoaded: List Photo -> String -> ThumbnailSize -> List (Html Msg)
-viewLoaded photos selectedUrl chosenSize = 
+viewLoaded: List Photo -> String -> Model -> List (Html Msg)
+viewLoaded photos selectedUrl model = 
   [ Html.h1 [] [ Html.text "Photo Groove" ]
     , Html.h3 [] [ Html.text "Thumbnail size"]
     , Html.button [ onClick ClickedSurprizeMe ] [ Html.text "Select random image"]
     , Html.div [ Attr.class "filters" ]
       [
-        viewFilter "Hue" 0
-      , viewFilter "Ripple" 0
-      , viewFilter "Noise" 0
+        viewFilter SlideHue "Hue" model.hue
+      , viewFilter SlideRipple "Ripple" model.ripple
+      , viewFilter SlideNoise "Noise" model.noise
       ]
     , Html.div [ Attr.id "choose-size" ] 
-        <| List.map (\size -> viewSizeChooser size (chosenSize == size)) [Small, Medium, Large]
+        <| List.map (\size -> viewSizeChooser size (model.chosenSize == size)) [Small, Medium, Large]
     , Html.div 
         [ 
           Attr.id "thumbnails"
-        , Attr.class (sizeToClass chosenSize) 
+        , Attr.class (sizeToClass model.chosenSize) 
         ] (List.map (viewThumbnail selectedUrl) photos)
     , Html.img [ Attr.class "large", Attr.src (urlPrefix ++ "large/" ++ selectedUrl)][]
   ]
@@ -178,6 +187,12 @@ update msg model =
           (model, Cmd.none)
     ClickedSize size ->
       ({ model | chosenSize = size}, Cmd.none)
+    SlideHue hue ->
+      ({ model | hue = hue}, Cmd.none)
+    SlideRipple ripple ->
+      ({ model | ripple = ripple}, Cmd.none)
+    SlideNoise noise ->
+      ({ model | noise = noise}, Cmd.none)
 
 selectUrl: String -> Status -> Status
 selectUrl url status =
