@@ -1,4 +1,4 @@
-module PhotoGroove exposing (main)
+port module PhotoGroove exposing (main)
 import Browser
 import Html exposing (Html)
 import Html.Attributes as Attr
@@ -8,6 +8,17 @@ import Json.Decode exposing (Decoder, at, int, list, string, succeed)
 import Json.Decode.Pipeline exposing (optional, required)
 import Json.Encode as Encode
 import Random
+
+port setFilters: FilterOptions -> Cmd msg
+
+type alias FilterOptions =
+  { url: String
+  , filters: List 
+    { 
+      name: String
+    , amount: Int 
+    }
+  }
 
 type alias Photo =
     { url : String
@@ -170,9 +181,9 @@ update msg model =
       ({ model | status = Error "Server error"}, Cmd.none)     
       
     GotRandomPhoto photo ->
-      ({ model | status = selectUrl photo.url model.status }, Cmd.none)
+      applyFilters { model | status = selectUrl photo.url model.status }
     ClickedPhoto url -> 
-      ({ model | status = selectUrl url model.status }, Cmd.none)
+      applyFilters { model | status = selectUrl url model.status }
     ClickedSurprizeMe ->
       case model.status of
         Loaded (firstPhoto :: otherPhotos) _ -> 
@@ -193,6 +204,23 @@ update msg model =
       ({ model | ripple = ripple}, Cmd.none)
     SlideNoise noise ->
       ({ model | noise = noise}, Cmd.none)
+
+applyFilters: Model -> (Model, Cmd Msg)
+applyFilters model =
+  case model.status of
+    Loaded photos selectedUrl ->
+      let
+        filters = [{ name = "Hue", amount = model.hue }
+          , { name = "Ripple", amount = model.ripple }
+          , { name = "Noise", amount = model.noise }
+          ]
+        url = urlPrefix ++ "/large" ++ selectedUrl
+      in
+      (model, setFilters { url = url, filters = filters })
+    Loading ->
+      (model, Cmd.none)
+    Error msg ->
+      (model, Cmd.none)
 
 selectUrl: String -> Status -> Status
 selectUrl url status =
