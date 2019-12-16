@@ -16,7 +16,7 @@ type alias FilterOptions =
   , filters: List 
     { 
       name: String
-    , amount: Int 
+    , amount: Float
     }
   }
 
@@ -210,9 +210,9 @@ applyFilters model =
   case model.status of
     Loaded photos selectedUrl ->
       let
-        filters = [{ name = "Hue", amount = model.hue }
-          , { name = "Ripple", amount = model.ripple }
-          , { name = "Noise", amount = model.noise }
+        filters = [{ name = "Hue", amount = toFloat model.hue / 11 }
+          , { name = "Ripple", amount = toFloat model.ripple / 11 }
+          , { name = "Noise", amount = toFloat model.noise / 11 }
           ]
         url = urlPrefix ++ "large/" ++ selectedUrl
       in
