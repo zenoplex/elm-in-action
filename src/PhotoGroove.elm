@@ -199,11 +199,11 @@ update msg model =
     ClickedSize size ->
       ({ model | chosenSize = size}, Cmd.none)
     SlideHue hue ->
-      ({ model | hue = hue}, Cmd.none)
+      applyFilters { model | hue = hue }
     SlideRipple ripple ->
-      ({ model | ripple = ripple}, Cmd.none)
+      applyFilters { model | ripple = ripple }
     SlideNoise noise ->
-      ({ model | noise = noise}, Cmd.none)
+      applyFilters { model | noise = noise }
 
 applyFilters: Model -> (Model, Cmd Msg)
 applyFilters model =
