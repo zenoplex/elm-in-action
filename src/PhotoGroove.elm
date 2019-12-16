@@ -155,7 +155,7 @@ viewLoaded photos selectedUrl model =
           Attr.id "thumbnails"
         , Attr.class (sizeToClass model.chosenSize) 
         ] (List.map (viewThumbnail selectedUrl) photos)
-    , Html.img [ Attr.class "large", Attr.src (urlPrefix ++ "large/" ++ selectedUrl)][]
+    , Html.canvas [ Attr.id "main-canvas", Attr.class "large" ][]
   ]
 
 viewThumbnail: String -> Photo -> Html Msg
@@ -214,7 +214,7 @@ applyFilters model =
           , { name = "Ripple", amount = model.ripple }
           , { name = "Noise", amount = model.noise }
           ]
-        url = urlPrefix ++ "/large" ++ selectedUrl
+        url = urlPrefix ++ "large/" ++ selectedUrl
       in
       (model, setFilters { url = url, filters = filters })
     Loading ->
